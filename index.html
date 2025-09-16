@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Daily Trending Image Prompts</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#0f172a;color:#e6eef8}
+    header{padding:20px;text-align:center}
+    h1{margin:0;font-size:1.4rem}
+    #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;padding:12px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));padding:12px;border-radius:10px;box-shadow:0 2px 8px rgba(2,6,23,0.6)}
+    .prompt{white-space:pre-wrap;font-size:0.88rem;line-height:1.25;margin-bottom:8px}
+    .meta{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    button.copy{padding:6px 8px;border-radius:6px;border:none;background:#2563eb;color:white;cursor:pointer}
+    footer{padding:14px;text-align:center;color:#9fb0d7;font-size:0.85rem}
+  </style>
+</head>
+<body>
+  <header><h1>Daily Trending Image Prompts — Auto</h1><p id="updated" style="color:#9fb0d7;margin:6px 0 0;font-size:0.9rem"></p></header>
+  <main id="grid"></main>
+  <footer>Built with GitHub Actions + Vercel • Free setup</footer>
+
+  <script>
+    async function load() {
+      try {
+        const res = await fetch('/prompts.json', {cache:'no-store'});
+        if(!res.ok) { document.getElementById('grid').innerText='No prompts found.'; return; }
+        const data = await res.json();
+        document.getElementById('updated').innerText = 'Updated: ' + (new Date(data.updated).toLocaleString() || '—');
+        const container = document.getElementById('grid');
+        container.innerHTML = '';
+        data.prompts.forEach((p, i) => {
+          const card = document.createElement('div'); card.className='card';
+          const pre = document.createElement('div'); pre.className='prompt'; pre.innerText = p;
+          const meta = document.createElement('div'); meta.className='meta';
+          const nr = document.createElement('div'); nr.style.opacity=0.8; nr.innerText = (i+1) + '.';
+          const btn = document.createElement('button'); btn.className='copy'; btn.innerText='Copy';
+          btn.onclick = ()=>{navigator.clipboard.writeText(p); btn.innerText='Copied'; setTimeout(()=>btn.innerText='Copy',900);}
+          meta.appendChild(nr); meta.appendChild(btn);
+          card.appendChild(pre); card.appendChild(meta);
+          container.appendChild(card);
+        });
+      } catch(e){ console.error(e); document.getElementById('grid').innerText='Error loading prompts.'; }
+    }
+    load();
+  </script>
+</body>
+</html>
