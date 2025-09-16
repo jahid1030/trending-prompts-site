@@ -1,0 +1,12 @@
+{
+  "name": "trending-prompts-fetcher",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "fetch": "node scripts/fetch-prompts.js"
+  },
+  "dependencies": {
+    "rss-parser": "^3.13.0",
+    "node-fetch": "^2.6.7"
+  }
+}
