@@ -1,0 +1,36 @@
+name: Daily fetch prompts
+
+# allow workflow to write repo contents
+permissions:
+  contents: write
+
+on:
+  schedule:
+    # every day at 00:30 UTC (adjust if you want). GitHub schedules run in UTC.
+    - cron: '30 0 * * *'
+  workflow_dispatch: {} # allows manual run from Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run fetch script
+        run: npm run fetch
+
+      - name: Commit prompts.json
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'chore: daily prompts update'
+          add: 'prompt
+          s.json'
