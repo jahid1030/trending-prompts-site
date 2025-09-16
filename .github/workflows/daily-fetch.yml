@@ -1,0 +1,33 @@
+name: Daily fetch prompts
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: '30 0 * * *'   # runs daily at 00:30 UTC
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run fetch script
+        run: npm run fetch
+
+      - name: Commit prompts.json
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'chore: daily prompts update'
+          add: 'prompts.json'
